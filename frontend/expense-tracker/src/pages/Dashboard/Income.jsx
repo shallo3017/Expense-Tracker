@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import IncomeOverview from "../../components/Income/IncomeOverview";
-import { data } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
+import Modal from "../../components/layouts/Modal";
+import AddIncomeForm from "../../components/Income/AddIncomeForm";
+import toast from "react-hot-toast";
+import IncomeList from "../../components/Income/IncomeList";
+import DeleteAlert from "../../components/layouts/DeleteAlert";
+import { useUserAuth } from "../../hooks/useUserAuth";
 
 const Income = () => {
+  useUserAuth();
   const [incomeData, setIncomeData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openDeleteAlert, setOpenDeleteAlert] = useState({
@@ -15,43 +21,88 @@ const Income = () => {
 
   const [openAddIncomeModal, setOpenAddIncomeModal] = useState(false);
 
-  //Getting income data
-  const fetchIncomeData = async () => {
-    if (loading) {
-      return;
-    }
+  //get all income details
+  const fetchIncomeDetails = async () => {
+    if (loading) return;
     setLoading(true);
-
     try {
-      // Simulating an API call to fetch income data
       const response = await axiosInstance.get(
         `${API_PATHS.INCOME.GET_ALL_INCOME}`
       );
-      console.log("Income data fetched successfully:", response.data);
+
       if (response.data) {
         setIncomeData(response.data);
       }
     } catch (error) {
-      console.error("Something went wrong. Please try again", error);
+      console.log("something went wrong.Please try agaain.", error);
     } finally {
       setLoading(false);
     }
-
-    //handle add income
-    const handleAddIncome = async (income) => {};
-    //Delete income
-    const handleDeleteIncome = async (incomeId) => {};
-    //handle download income
-    const handleDownloadIncomeDetails = async () => {
-      // Logic to download income data
-      console.log("Downloading income data...");
-    };
-    useEffect(() => {
-      fetchIncomeData();
-    }, []);
   };
+  //handle add income
+  const handleAddIncome = async (income) => {
+    const { source, amount, date, icon } = income;
+
+    //validation checks
+    if (!source.trim()) {
+      toast.error("Source is required.");
+      return;
+    }
+
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+      toast.error("Amount should be a valid number greater than 0.");
+      return;
+    }
+
+    if (!date) {
+      toast.error("Date is required.");
+      return;
+    }
+
+    try {
+      await axiosInstance.post(API_PATHS.INCOME.ADD_INCOME, {
+        source,
+        amount,
+        date,
+        icon,
+      });
+
+      setOpenAddIncomeModal(false);
+      toast.success("Income added successfully");
+      fetchIncomeDetails();
+    } catch (error) {
+      console.error(
+        "Error adding income:",
+        error.response?.data?.message || error.message
+      );
+    }
+  };
+  //Delete income
+  const handleDeleteIncome = async (incomeId) => {
+    try {
+      await axiosInstance.delete(API_PATHS.INCOME.DELETE_INCOME(incomeId));
+      setOpenDeleteAlert({ show: false, data: null });
+      toast.success("Income details deleted successfully");
+      fetchIncomeDetails();
+    } catch (error) {
+      console.error(
+        "Error deleteing income:",
+        error.response?.data?.message || error.message
+      );
+    }
+  };
+  //handle download income
+  const handleDownloadIncomeDetails = async () => {
+    // Logic to download income data
+    console.log("Downloading income data...");
+  };
+
+  useEffect(() => {
+    fetchIncomeDetails();
+    return () => {};
+  }, []);
   return (
-    <DashboardLayout activeMenu="Dashboard">
+    <DashboardLayout activeMenu="Income">
       <div className="my-5 mx-auto">
         <div className="grid grid-cols-1 gap-6">
           <div className="">
@@ -60,6 +111,32 @@ const Income = () => {
               onAddIncome={() => setOpenAddIncomeModal(true)}
             />
           </div>
+
+          <IncomeList
+            transactions={incomeData}
+            onDelete={(id) => {
+              setOpenDeleteAlert({ show: true, data: id });
+            }}
+            onDownload={handleDownloadIncomeDetails}
+          />
+          <Modal
+            isOpen={openAddIncomeModal}
+            onClose={() => setOpenAddIncomeModal(false)}
+            title="Add Income"
+          >
+            <AddIncomeForm onAddIncome={handleAddIncome} />
+          </Modal>
+
+          <Modal
+            isOpen={openDeleteAlert.show}
+            onClose={() => setOpenDeleteAlert({ show: false, data: null })}
+            title="Delete Income"
+          >
+            <DeleteAlert
+              content="Are you sure you want to delete this income detail?"
+              onDelete={() => handleDeleteIncome(openDeleteAlert.data)}
+            />
+          </Modal>
         </div>
       </div>
     </DashboardLayout>

@@ -1,7 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { LuPlus } from "react-icons/lu";
+import CustomBarChart from "../Charts/CustomBarChart";
+import { prepareIncomeBarChartData } from "../../utils/helper";
 
 const IncomeOverview = ({ transactions, onAddIncome }) => {
-  return <div>IncomeOverview</div>;
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    console.log("IncomeOverview useEffect started");
+    console.log("transactions received:", transactions);
+
+    try {
+      const result = prepareIncomeBarChartData(transactions);
+      setChartData(result);
+      console.log("result from prepareIncomeBarChartData", result);
+    } catch (error) {
+      console.error("Error in prepareIncomeBarChartData:", error);
+    }
+  }, [transactions]);
+  return (
+    <div className="cards">
+      <div className="flex items-center justify-between">
+        <div className="">
+          <h5 className="text-lg">Income Overview</h5>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Track your Earnings over time and analyze your income trends
+          </p>
+        </div>
+
+        <button className="add-btn" onClick={onAddIncome}>
+          <LuPlus className="text-lg" />
+          Add Income
+        </button>
+      </div>
+      <div className="mt-10">
+        <CustomBarChart data={chartData} />
+      </div>
+    </div>
+  );
 };
 
 export default IncomeOverview;
