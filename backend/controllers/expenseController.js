@@ -86,9 +86,9 @@ exports.downloadExpenseExcel = async (req, res) => {
 
     //prepare data for excel
     const data = expense.map((item) => ({
-      category: item.category,
+      Category: item.category,
       Amount: item.amount,
-      date: item.date.toISOString().split("T")[0],
+      Date: item.date.toISOString().split("T")[0],
     }));
 
     const wb = xlsx.utils.book_new();

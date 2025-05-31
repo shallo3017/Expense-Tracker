@@ -1,6 +1,7 @@
 const xlsx = require("xlsx");
 const User = require("../models/User");
 const Income = require("../models/Income");
+const fs = require("fs");
 
 //Add income source
 exports.addIncome = async (req, res) => {
@@ -85,9 +86,9 @@ exports.downloadIncomeExcel = async (req, res) => {
 
     //prepare data for excel
     const data = income.map((item) => ({
-      source: item.source,
-      Ammount: item.amount,
-      date: item.date.toISOString().split("T")[0],
+      Source: item.source,
+      Amount: item.amount,
+      Date: item.date.toISOString().split("T")[0],
     }));
 
     const wb = xlsx.utils.book_new();
