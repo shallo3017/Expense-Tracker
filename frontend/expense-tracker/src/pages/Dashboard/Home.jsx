@@ -64,7 +64,6 @@ const Home = () => {
       // Cleanup if needed
     };
   }, []);
-  console.log("Dashboard Data:", dashboardData);
   return (
     <DashboardLayout activeMenu="Dashboard">
       <div className="my-5 mx-auto">

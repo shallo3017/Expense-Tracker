@@ -54,42 +54,80 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <div className="lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center">
-        <h3 className="text-xl font-semibold text-black">Welcome Back</h3>
-        <p className="text-xs text-slate-700 mt-[5px] mb-6">
-          Please enter your details to log in
-        </p>
-        <form onSubmit={handleLogin}>
-          <Input
-            value={email}
-            onChange={({ target }) => setEmail(target.value)}
-            label="Email Address"
-            placeholder="hellothere@example.com"
-            type="text"
-          />
+      <div className="min-h-screen w-full flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-lg mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-sm text-gray-600">
+              Sign in to your account to continue
+            </p>
+          </div>
 
-          <Input
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-            label="Password"
-            placeholder="Minimum 8 characters"
-            type="password"
-          />
-          {error && <p className="text-red-500 teext-xs pb-2.5 ">{error}</p>}
+          {/* Form Container */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-10">
+            <form onSubmit={handleLogin} className="space-y-5">
+              {/* Input Fields */}
+              <div className="space-y-4">
+                <Input
+                  value={email}
+                  onChange={({ target }) => setEmail(target.value)}
+                  label="Email Address"
+                  placeholder="your@email.com"
+                  type="email"
+                />
 
-          <button className="btn-primary" type="submit">
-            LOGIN
-          </button>
-          <p className="tex-[13px] text-slate-800 mt-3">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="text-blue-500 underline font-semimedium"
-            >
-              Sign Up
-            </Link>
-          </p>
-        </form>
+                <Input
+                  value={password}
+                  onChange={({ target }) => setPassword(target.value)}
+                  label="Password"
+                  placeholder="Enter your password"
+                  type="password"
+                />
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-600 text-sm font-medium">{error}</p>
+                </div>
+              )}
+
+              {/* Forgot Password Link */}
+              <div className="text-right">
+                <a
+                  href="#"
+                  className="text-sm text-violet-600 hover:text-violet-700 hover:underline transition-all duration-200 font-medium"
+                >
+                  Forgot password?
+                </a>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                className="w-full bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white font-semibold py-3.5 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                type="submit"
+              >
+                Sign In
+              </button>
+
+              {/* Sign Up Link */}
+              <div className="text-center pt-4">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{" "}
+                  <Link
+                    to="/signup"
+                    className="text-violet-600 hover:text-violet-700 font-semibold hover:underline transition-colors duration-200"
+                  >
+                    Create account
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </AuthLayout>
   );

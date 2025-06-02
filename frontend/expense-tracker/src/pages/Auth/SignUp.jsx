@@ -79,54 +79,86 @@ const SignUp = () => {
 
   return (
     <AuthLayout>
-      <div className="lg:w-[100%] h-auto md:h-full mt-10 md:mt-0 flex flex-col ">
-        <h3 className="text-xl font-semibold text-black">Create an Account</h3>
-        <p className="text-xs text-slate-700 mt-[5px] mb-6">
-          Enter your details below.
-        </p>
-
-        <form onSubmit={handleSignUp}>
-          <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              value={fullName}
-              onChange={({ target }) => setFullName(target.value)}
-              label="Full Name"
-              placeholder="Raj Nayar"
-              type="text"
-            />
-
-            <Input
-              value={email}
-              onChange={({ target }) => setEmail(target.value)}
-              label="Email Address"
-              placeholder="hellothere@example.com"
-              type="text"
-            />
-            <div className="col-span-2">
-              <Input
-                value={password}
-                onChange={({ target }) => setPassword(target.value)}
-                label="Password"
-                placeholder="Minimum 8 characters"
-                type="password"
-              />
-            </div>
+      <div className="min-h-screen w-full flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-lg mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Create Account
+            </h1>
+            <p className="text-sm text-gray-600">
+              Join us today and get started
+            </p>
           </div>
 
-          {error && <p className="text-red-500 text-xs pb-2.5 ">{error}</p>}
+          {/* Form Container */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-10">
+            <form onSubmit={handleSignUp} className="space-y-5">
+              {/* Profile Photo Section */}
+              <div className="flex justify-center mb-6">
+                <ProfilePhotoSelector
+                  image={profilePic}
+                  setImage={setProfilePic}
+                />
+              </div>
 
-          <button className="btn-primary" type="submit">
-            SIGN UP
-          </button>
-          <p className="text-[13px] text-slate-800 mt-3">
-            Already have an account?{" "}
-            <Link to="/login" className="text-blue-500 underline font-semibold">
-              Login
-            </Link>
-          </p>
-        </form>
+              {/* Input Fields */}
+              <div className="space-y-4">
+                <Input
+                  value={fullName}
+                  onChange={({ target }) => setFullName(target.value)}
+                  label="Full Name"
+                  placeholder="Enter your full name"
+                  type="text"
+                />
+
+                <Input
+                  value={email}
+                  onChange={({ target }) => setEmail(target.value)}
+                  label="Email Address"
+                  placeholder="your@email.com"
+                  type="email"
+                />
+
+                <Input
+                  value={password}
+                  onChange={({ target }) => setPassword(target.value)}
+                  label="Password"
+                  placeholder="Create a secure password"
+                  type="password"
+                />
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-600 text-sm font-medium">{error}</p>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <button
+                className="w-full bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white font-semibold py-3.5 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                type="submit"
+              >
+                Create Account
+              </button>
+
+              {/* Login Link */}
+              <div className="text-center pt-4">
+                <p className="text-sm text-gray-600">
+                  Already have an account?{" "}
+                  <Link
+                    to="/login"
+                    className="text-violet-600 hover:text-violet-700 font-semibold hover:underline transition-colors duration-200"
+                  >
+                    Sign in
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </AuthLayout>
   );
