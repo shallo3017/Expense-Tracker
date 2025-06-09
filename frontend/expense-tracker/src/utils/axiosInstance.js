@@ -15,7 +15,21 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("token");
     if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
+      // Check if token is expired before adding it
+      try {
+        const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+        const currentTime = Date.now() / 1000;
+
+        if (tokenPayload.exp > currentTime) {
+          config.headers["Authorization"] = `Bearer ${accessToken}`;
+        } else {
+          // Token is expired, remove it
+          localStorage.removeItem("token");
+        }
+      } catch (error) {
+        // Invalid token format, remove it
+        localStorage.removeItem("token");
+      }
     }
     return config;
   },

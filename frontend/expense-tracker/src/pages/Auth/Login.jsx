@@ -38,6 +38,7 @@ const Login = () => {
         password,
       });
       const { token, user } = response.data;
+      console.log(token);
       if (token) {
         localStorage.setItem("token", token);
         updateUser(user);
@@ -130,6 +131,9 @@ const Login = () => {
         </div>
       </div>
     </AuthLayout>
+    // <AuthLayout>
+    //   <p>Hello there</p>
+    // </AuthLayout>
   );
 };
 
