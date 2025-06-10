@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
-import AuthLayout from "../../components/layouts/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Inputs/Input";
-import { validateEmail } from "../../utils/helper";
 import ProfilePhotoSelector from "../../components/Inputs/ProfilePhotoSelector";
+import AuthLayout from "../../components/layouts/AuthLayout";
+import { validateEmail } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
 import { UserContext } from "../../context/userContext";
 import uploadImage from "../../utils/uploadImage";
@@ -14,150 +14,135 @@ const SignUp = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState(null);
 
   const { updateUser } = useContext(UserContext);
-
   const navigate = useNavigate();
 
-  //Handle SignUp Form Submission
   const handleSignUp = async (e) => {
     e.preventDefault();
-
     let profileImageUrl = "";
 
-    if (!fullName) {
-      setError("Please enter your full name");
-      return;
-    }
+    if (!fullName) return setError("Please enter your full name");
+    if (!validateEmail(email))
+      return setError("Please enter a valid email address");
+    if (password.length < 8)
+      return setError("Password must be at least 8 characters long");
 
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
-      return;
-    }
     setError("");
 
-    //SignUp API call
     try {
-      //upload image if present
       if (profilePic) {
         try {
           const imageUploadRes = await uploadImage(profilePic);
           profileImageUrl = imageUploadRes?.imageUrl || "";
-        } catch (imageError) {
-          console.error("Image upload failed:", imageError);
-          // You might want to show an error or continue without the image
+        } catch (err) {
+          console.error("Image upload failed:", err);
         }
       }
 
-      const response = await axiosInstance.post(API_PATHS.AUTH.SIGNUP, {
-        fullName: fullName,
+      const res = await axiosInstance.post(API_PATHS.AUTH.SIGNUP, {
+        fullName,
         email,
         password,
         profileImageUrl,
       });
-      const { token, user } = response.data;
+
+      const { token, user } = res.data;
       if (token) {
         localStorage.setItem("token", token);
         updateUser(user);
         navigate("/dashboard");
       }
-    } catch (error) {
-      if (error.response && error.response.data.message) {
-        setError(error.response.data.message);
-      } else {
-        setError("Something went wrong. Please try again later.");
-      }
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        "Something went wrong. Please try again later.";
+      setError(msg);
     }
   };
 
   return (
     <AuthLayout>
-      <div className="min-h-screen w-full flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-lg mx-auto">
-          {/* Header Section */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+      <div className="relative min-h-screen w-full flex items-center justify-center px-4 py-8 bg-white overflow-hidden">
+        {/* Background App Logo */}
+        <img
+          src="/logo-bg.jpeg" // Place this in /public
+          alt="App Background Logo"
+          className="absolute inset-0 mx-auto opacity-10 w-[80%] max-w-[700px] object-contain z-0 pointer-events-none"
+        />
+
+        {/* Main Card */}
+        <div className="relative z-10 w-full max-w-lg mx-auto bg-white p-10 rounded-xl shadow-lg border border-gray-100">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-semibold text-gray-900 mb-1">
               Create Account
             </h1>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-500">
               Join us today and get started
             </p>
           </div>
 
-          {/* Form Container */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-10">
-            <form onSubmit={handleSignUp} className="space-y-5">
-              {/* Profile Photo Section */}
-              <div className="flex justify-center mb-6">
-                <ProfilePhotoSelector
-                  image={profilePic}
-                  setImage={setProfilePic}
-                />
+          {/* Form */}
+          <form onSubmit={handleSignUp} className="space-y-5">
+            {/* Profile Photo */}
+            <div className="flex justify-center">
+              <ProfilePhotoSelector
+                image={profilePic}
+                setImage={setProfilePic}
+              />
+            </div>
+
+            {/* Input Fields */}
+            <Input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              label="Full Name"
+              placeholder="Enter your full name"
+              type="text"
+            />
+            <Input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              label="Email Address"
+              placeholder="your@email.com"
+              type="email"
+            />
+            <Input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              label="Password"
+              placeholder="Create a secure password"
+              type="password"
+            />
+
+            {/* Error */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                <p className="text-red-600 text-sm font-medium">{error}</p>
               </div>
+            )}
 
-              {/* Input Fields */}
-              <div className="space-y-4">
-                <Input
-                  value={fullName}
-                  onChange={({ target }) => setFullName(target.value)}
-                  label="Full Name"
-                  placeholder="Enter your full name"
-                  type="text"
-                />
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3.5 px-4 rounded-md transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              Create Account
+            </button>
 
-                <Input
-                  value={email}
-                  onChange={({ target }) => setEmail(target.value)}
-                  label="Email Address"
-                  placeholder="your@email.com"
-                  type="email"
-                />
-
-                <Input
-                  value={password}
-                  onChange={({ target }) => setPassword(target.value)}
-                  label="Password"
-                  placeholder="Create a secure password"
-                  type="password"
-                />
-              </div>
-
-              {/* Error Message */}
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-red-600 text-sm font-medium">{error}</p>
-                </div>
-              )}
-
-              {/* Submit Button */}
-              <button
-                className="w-full bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white font-semibold py-3.5 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                type="submit"
+            {/* Login Link */}
+            <p className="text-sm text-center text-gray-600 mt-2">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-teal-600 hover:text-teal-700 font-semibold hover:underline transition-colors"
               >
-                Create Account
-              </button>
-
-              {/* Login Link */}
-              <div className="text-center pt-4">
-                <p className="text-sm text-gray-600">
-                  Already have an account?{" "}
-                  <Link
-                    to="/login"
-                    className="text-violet-600 hover:text-violet-700 font-semibold hover:underline transition-colors duration-200"
-                  >
-                    Sign in
-                  </Link>
-                </p>
-              </div>
-            </form>
-          </div>
+                Sign in
+              </Link>
+            </p>
+          </form>
         </div>
       </div>
     </AuthLayout>

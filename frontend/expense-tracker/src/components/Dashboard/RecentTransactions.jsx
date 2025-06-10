@@ -4,7 +4,6 @@ import moment from "moment";
 import TransactionInfoCard from "../Cards/TransactionInfoCard";
 
 const RecentTransactions = ({ transactions, onSeeMore }) => {
-  console.log("Transactions:", transactions);
   return (
     <div className="cards">
       <div className="flex items-center justify-between">

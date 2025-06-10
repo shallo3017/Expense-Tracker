@@ -34,7 +34,7 @@ const Expense = () => {
         setExpenseData(response.data);
       }
     } catch (error) {
-      console.log("something went wrong.Please try agaain.", error);
+      console.error("something went wrong.Please try agaain.", error);
     } finally {
       setLoading(false);
     }

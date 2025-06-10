@@ -13,7 +13,6 @@ const Login = () => {
   const [error, setError] = useState(null);
 
   const { updateUser } = useContext(UserContext);
-
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -31,21 +30,24 @@ const Login = () => {
 
     setError("");
 
-    //Login API call
     try {
       const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
         email,
         password,
       });
       const { token, user } = response.data;
-      console.log(token);
+
       if (token) {
-        localStorage.setItem("token", token);
+        try {
+          localStorage.setItem("token", token);
+        } catch (storageError) {
+          console.warn("Could not save token to localStorage:", storageError);
+        }
         updateUser(user);
         navigate("/dashboard");
       }
     } catch (error) {
-      if (error.response && error.response.data.message) {
+      if (error.response?.data?.message) {
         setError(error.response.data.message);
       } else {
         setError("Something went wrong. Please try again later.");
@@ -55,23 +57,27 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <div className="min-h-screen w-full flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-lg mx-auto">
-          {/* Header Section */}
+      <div
+        className="h-screen w-full bg-cover bg-center flex items-center justify-center px-4"
+        style={{
+          backgroundImage: "url('/logo-bg.jpeg')",
+          backgroundBlendMode: "overlay",
+          backgroundColor: "#f1f5f9",
+        }}
+      >
+        <div className="w-full max-w-md mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-1">
               Welcome Back
-            </h1>
-            <p className="text-sm text-gray-600">
-              Sign in to your account to continue
+            </h2>
+            <p className="text-gray-500 text-sm">
+              Track your expenses with ease
             </p>
           </div>
 
-          {/* Form Container */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-10">
-            <form onSubmit={handleLogin} className="space-y-5">
-              {/* Input Fields */}
-              <div className="space-y-4">
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 p-8">
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div className="space-y-5">
                 <Input
                   value={email}
                   onChange={({ target }) => setEmail(target.value)}
@@ -79,7 +85,6 @@ const Login = () => {
                   placeholder="your@email.com"
                   type="email"
                 />
-
                 <Input
                   value={password}
                   onChange={({ target }) => setPassword(target.value)}
@@ -89,38 +94,34 @@ const Login = () => {
                 />
               </div>
 
-              {/* Error Message */}
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-red-600 text-sm font-medium">{error}</p>
+                <div className="bg-red-50 border-l-4 border-red-400 rounded-lg p-4">
+                  <p className="text-red-700 text-sm">{error}</p>
                 </div>
               )}
 
-              {/* Forgot Password Link */}
               <div className="text-right">
                 <a
                   href="#"
-                  className="text-sm text-violet-600 hover:text-violet-700 hover:underline transition-all duration-200 font-medium"
+                  className="text-sm text-teal-600 hover:text-teal-700 hover:underline transition-all font-medium"
                 >
                   Forgot password?
                 </a>
               </div>
 
-              {/* Submit Button */}
               <button
-                className="w-full bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white font-semibold py-3.5 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-semibold py-4 px-4 rounded-xl transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 type="submit"
               >
                 Sign In
               </button>
 
-              {/* Sign Up Link */}
-              <div className="text-center pt-4">
+              <div className="text-center pt-6 border-t border-gray-100">
                 <p className="text-sm text-gray-600">
                   Don't have an account?{" "}
                   <Link
                     to="/signup"
-                    className="text-violet-600 hover:text-violet-700 font-semibold hover:underline transition-colors duration-200"
+                    className="text-teal-600 hover:text-teal-700 font-semibold hover:underline transition"
                   >
                     Create account
                   </Link>
@@ -128,12 +129,15 @@ const Login = () => {
               </div>
             </form>
           </div>
+
+          <div className="text-center mt-6">
+            <p className="text-xs text-gray-400">
+              Secure • Simple • Smart Expense Tracking
+            </p>
+          </div>
         </div>
       </div>
     </AuthLayout>
-    // <AuthLayout>
-    //   <p>Hello there</p>
-    // </AuthLayout>
   );
 };
 

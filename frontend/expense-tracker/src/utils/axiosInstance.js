@@ -49,10 +49,10 @@ axiosInstance.interceptors.response.use(
         //redirect to login page if unauthorized
         window.location.href = "/login";
       } else if (error.response.status === 500) {
-        console.log("Server error. please try again later.");
+        console.error("Server error. please try again later.");
       }
     } else if (error.code === "ECONNABORTED") {
-      console.log("Request timeout. Please try again");
+      console.error("Request timeout. Please try again");
     }
     return Promise.reject(error);
   }

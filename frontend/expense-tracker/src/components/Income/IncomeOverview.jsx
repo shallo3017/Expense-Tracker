@@ -7,13 +7,9 @@ const IncomeOverview = ({ transactions, onAddIncome }) => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    console.log("IncomeOverview useEffect started");
-    console.log("transactions received:", transactions);
-
     try {
       const result = prepareIncomeBarChartData(transactions);
       setChartData(result);
-      console.log("result from prepareIncomeBarChartData", result);
     } catch (error) {
       console.error("Error in prepareIncomeBarChartData:", error);
     }

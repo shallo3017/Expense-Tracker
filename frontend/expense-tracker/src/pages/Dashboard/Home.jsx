@@ -43,7 +43,7 @@ const Home = () => {
 
       // Only redirect to login if it's an authentication error (401)
       if (error.response?.status === 401) {
-        console.log("Authentication error - redirecting to login");
+        console.error("Authentication error - redirecting to login");
         navigate("/login");
       } else {
         // For other errors (like 404), just set an error state
@@ -60,9 +60,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchDashboardData();
-    return () => {
-      // Cleanup if needed
-    };
+    return () => {};
   }, []);
   return (
     <DashboardLayout activeMenu="Dashboard">
