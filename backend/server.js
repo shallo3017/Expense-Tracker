@@ -22,6 +22,7 @@ app.use(
 app.use(express.json());
 
 connectDB();
+const _dirname = path.resolve();
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/income", incomeRoutes);
@@ -32,6 +33,15 @@ app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const PORT = process.env.PORT || 5000;
+
+app.use(
+  express.static(path.join(_dirname, "frontend", "expense-tracker", "dist"))
+);
+app.get((_, res) => {
+  res.sendFile(
+    path.resolve(_dirname, "frontend", "expense-tracker", "dist", "index.html")
+  );
+});
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
