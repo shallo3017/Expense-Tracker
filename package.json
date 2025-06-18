@@ -4,8 +4,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon backend/server.js",
-    "build": "npm install && npm install --prefix frontend/expense-tracker && npm run build --prefix frontend/expense-tracker",
-    "start": "nodemon backend/server.js"
+    "start": "nodemon backend/server.js",
+    "build": "npm install && npm install --prefix frontend/expense-tracker && npm run build --prefix frontend/expense-tracker"
   },
   "keywords": [],
   "author": "",
@@ -14,12 +14,14 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "csv-writer": "^1.6.0",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1",
     "multer": "^1.4.5-lts.2",
-    "xlsx": "^0.18.5"
+    "path-to-regexp": "^6.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

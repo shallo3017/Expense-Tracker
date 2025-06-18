@@ -1,4 +1,5 @@
-const xlsx = require("xlsx");
+// const xlsx = require("xlsx");
+const ExcelJS = require("exceljs");
 const Expense = require("../models/Expense");
 const fs = require("fs");
 const User = require("../models/User");
@@ -79,38 +80,86 @@ exports.deleteExpense = async (req, res) => {
 };
 
 //download expense list in excel format
+// exports.downloadExpenseExcel = async (req, res) => {
+//   const userId = req.user._id;
+//   try {
+//     const expense = await Expense.find({ userId }).sort({ date: -1 });
+
+//     //prepare data for excel
+//     const data = expense.map((item) => ({
+//       Category: item.category,
+//       Amount: item.amount,
+//       Date: item.date.toISOString().split("T")[0],
+//     }));
+
+//     const wb = xlsx.utils.book_new();
+//     const ws = xlsx.utils.json_to_sheet(data);
+//     xlsx.utils.book_append_sheet(wb, ws, "Expense");
+//     xlsx.writeFile(wb, "expense_details.xlsx");
+//     res.download("expense_details.xlsx", (err) => {
+//       if (err) {
+//         console.error("Error downloading file:", err);
+//         res.status(500).json({
+//           success: false,
+//           message: "Error downloading file",
+//         });
+//       } else {
+//         // Optionally, delete the file after download
+//         fs.unlinkSync("expense_details.xlsx");
+//       }
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// };
 exports.downloadExpenseExcel = async (req, res) => {
   const userId = req.user._id;
   try {
-    const expense = await Expense.find({ userId }).sort({ date: -1 });
+    const expenses = await Expense.find({ userId }).sort({ date: -1 });
 
-    //prepare data for excel
-    const data = expense.map((item) => ({
-      Category: item.category,
-      Amount: item.amount,
-      Date: item.date.toISOString().split("T")[0],
-    }));
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Expense Data");
 
-    const wb = xlsx.utils.book_new();
-    const ws = xlsx.utils.json_to_sheet(data);
-    xlsx.utils.book_append_sheet(wb, ws, "Expense");
-    xlsx.writeFile(wb, "expense_details.xlsx");
-    res.download("expense_details.xlsx", (err) => {
-      if (err) {
-        console.error("Error downloading file:", err);
-        res.status(500).json({
-          success: false,
-          message: "Error downloading file",
-        });
-      } else {
-        // Optionally, delete the file after download
-        fs.unlinkSync("expense_details.xlsx");
-      }
+    // Add headers
+    worksheet.columns = [
+      { header: "Category", key: "category", width: 20 },
+      { header: "Amount", key: "amount", width: 15 },
+      { header: "Date", key: "date", width: 15 },
+    ];
+
+    // Add style to headers
+    worksheet.getRow(1).font = { bold: true };
+
+    // Add data
+    expenses.forEach((item) => {
+      worksheet.addRow({
+        category: item.category,
+        amount: item.amount,
+        date: new Date(item.date).toISOString().split("T")[0],
+      });
     });
+
+    // Set response headers
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=expense_details.xlsx"
+    );
+
+    // Write to response
+    await workbook.xlsx.write(res);
+    res.end();
   } catch (error) {
+    console.error("Error generating Excel file:", error);
     res.status(500).json({
       success: false,
-      message: "Server error",
+      message: "Error generating Excel file",
     });
   }
 };
