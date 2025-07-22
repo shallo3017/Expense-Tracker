@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon backend/server.js",
-    "start": "node backend/server.js",
-    "build": "npm install && npm install --prefix frontend/expense-tracker && npm run build --prefix frontend/expense-tracker"
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "build": "echo 'No build step needed for backend-only deployment'"
   },
   "keywords": [],
   "author": "",
